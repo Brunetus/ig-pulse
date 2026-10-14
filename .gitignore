@@ -1,0 +1,64 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+credentials*.json
+token*.json
+client_secret*.json
+service-account*.json
+# deps / build / local state
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.wrangler/
+.DS_Store
+*.log
+logs/
+*.sqlite
+*.sqlite-*
+*.db
+*.zip
+.claude/settings.local.json
+# footage, audio, raw media (kept on the Mac / Drive, not GitHub)
+footage/
+drafts/
+scratch/
+scratchpad/
+scratchpad_*/
+rejects/
+output/
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.m4v
+*.webm
+*.mkv
+*.avi
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.heic
+*.HEIC
+*.psd
+# photos / renders
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.png
+*.PNG
+*.webp
+*.gif
+*.img
+
+# 40MB+ live state, rewritten every run
+state/pulse.json
+
+.secrets/
+secrets/

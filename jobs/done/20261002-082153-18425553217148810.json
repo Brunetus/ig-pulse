@@ -1,0 +1,8 @@
+{
+ "id": "20261002-082153-18425553217148810",
+ "verdict": "DECLINE",
+ "concept": null,
+ "reason": "SELF-CAPTURE: the spiking reel Dd-Ss2PI0PB is @imabgold's OWN post 'localhost' (1001_localhost build, aired 2026-10-02 01:23:12Z, 165k views at 12.7h) - job caption is byte-identical to captions/localhost.txt. Nothing to mimic; fatigue gate fires at max (it IS the last posted reel) and its whiteboard payoff is already burned. Capture already on the bank surface (taste.md Dd-Ss2PI0PB, watchlist.md donor DcRZppCMir8), so no new entry written. ACTION FOR MARCUS: monitor.py:34 uses imabgold's user id as ANCHOR with no self-exclusion filter, so the account keeps spawning pulse jobs against its own hits.",
+ "outbox": [],
+ "finished": "2026-10-02T10:42:00-04:00"
+}

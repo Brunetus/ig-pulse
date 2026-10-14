@@ -1,0 +1,22 @@
+{
+ "id": "20260917-181105-17946088944328175",
+ "created": "2026-09-17T22:11:06+0000",
+ "status": "spawned",
+ "tag": "claudecode",
+ "permalink": "https://www.instagram.com/reel/DdYaMbjRr8T/",
+ "posted": "2026-09-17T08:15:25+0000",
+ "caption": "\ud83d\udca5 THE CLAUDE CODE SOURCE LEAK \n\nAnthropic accidentally published the entire source code of Claude Code to a public package registry.There was no hack and no breach. A single missing line in one config file left 512,000 lines of internal TypeScript completely live for anyone to download.\n\n\u23f1\ufe0f The Timeline of a DisasterSpotted in Hours: \n\nA security researcher caught the mistake at 4:23 AM.Viral Explosion: Within hours, the public post hit 21 million views.The Race to Mirror: The entire codebase was mirrored across GitHub before Anthropic could pull it down.\n\nCompetitor's Advantage: \n\nCompetitors had a definitive blueprint before breakfast.\n\n\ud83d\udd13 What Was Exposed?\n\nThe leak revealed critical, unannounced innovations:Unannounced Models: Code details for upcoming, unreleased AI models.Internal Memory Architecture: \n\nThe exact systems powering Claude Code's most advanced features.Project KAIROS: A secret, fully autonomous background mode.\n\n#ClaudeCodeLeak\n\n#AnthropicLeak\n\n#ClaudeCode\n\n#TechNews",
+ "clip": "/Users/marcusaurelius/Claude Code/ig-pulse/clips/20260917-181105-17946088944328175.mp4",
+ "metrics": {
+  "likes_per_hour": 398.6,
+  "accel": 3.86,
+  "in_top_media": false,
+  "latest": {
+   "t": "2026-09-17T22:07:30+0000",
+   "likes": 4687,
+   "comments": 26
+  }
+ },
+ "why": "#claudecode reel at 398.6 likes/hr, accelerating x3.86",
+ "spawned_at": "2026-09-17T22:11:07+0000"
+}
