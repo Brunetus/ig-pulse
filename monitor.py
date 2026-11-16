@@ -800,9 +800,15 @@ class Monitor:
         if gq and gq[0] <= datetime.now().strftime("%H:%M") <= gq[1]:
             log(f"graph quiet window {gq[0]}-{gq[1]} (viral-bank scan) — tick skipped")
             return
-        if SCAN_LOCK.exists():
-            log("viral-bank scan running (.scan.lock) — tick skipped")
-            return
+        # a lock older than 3h is stale (the scan has never run past ~90 min):
+        # ignore it so a crashed scan can never silence pulse indefinitely
+        try:
+            if time.time() - SCAN_LOCK.stat().st_mtime < 3 * 3600:
+                log("viral-bank scan running (.scan.lock) — tick skipped")
+                return
+            log("viral-bank .scan.lock is over 3h old (stale) — ticking anyway")
+        except OSError:
+            pass  # no lock
         # empty pool = tags.json failed to load; polling nothing is survivable
         # but prune_media would delete EVERY record and save_json would then
         # overwrite tags.json with the empty pool — refuse the whole tick
