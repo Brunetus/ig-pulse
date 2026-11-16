@@ -35,6 +35,7 @@ ANCHOR = "17841480076308621"  # imabgold IG user id — the only sanctioned anch
 GRAPH = "https://graph.facebook.com/v21.0"
 TOKEN_ENV = Path.home() / "Claude Code" / "reel-app" / ".env"
 BANK_LOGS = Path.home() / "Claude Code" / "viral-bank" / "logs"
+SCAN_LOCK = Path.home() / "Claude Code" / "viral-bank" / ".scan.lock"
 
 CFG_DEFAULTS = {
     "weekly_quota": 30,          # Meta: unique hashtags per rolling 7 days (shared with bank scan)
@@ -70,6 +71,12 @@ CFG_DEFAULTS = {
     "prefilter_scene_thresh": 0.1,
     "max_stale_hours": 4,        # a media unseen this long can't fire — covers one deep-sweep cycle (~3.5h), beyond that its score is frozen history
     "quiet_window": ["08:25", "10:35"],  # daily-routine window: queue fires, don't spawn
+    # 2026-11-16, Marcus: no Graph calls at all while the 07:30 viral-bank scan
+    # runs. Both jobs share the system token's app and its rolling 1h limit;
+    # ~150 pulse calls/h left the scan's ~100-call burst no headroom (code 4 at
+    # handle 58-67). The tick also skips while the scan's lock dir exists, so a
+    # late or long scan (Mac asleep at 07:30) is covered too.
+    "graph_quiet_window": ["06:30", "07:50"],
     "recent_limit": 30,
     "top_limit": 20,
     "max_snaps": 12,
@@ -788,6 +795,13 @@ class Monitor:
     def tick(self):
         if (ROOT / "PAUSED").exists():
             log("PAUSED file present — tick skipped")
+            return
+        gq = self.cfg.get("graph_quiet_window")
+        if gq and gq[0] <= datetime.now().strftime("%H:%M") <= gq[1]:
+            log(f"graph quiet window {gq[0]}-{gq[1]} (viral-bank scan) — tick skipped")
+            return
+        if SCAN_LOCK.exists():
+            log("viral-bank scan running (.scan.lock) — tick skipped")
             return
         # empty pool = tags.json failed to load; polling nothing is survivable
         # but prune_media would delete EVERY record and save_json would then
