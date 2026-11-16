@@ -247,6 +247,24 @@ def bank_charged_tags(days=7):
     return tags
 
 
+def scan_quiet_reason(cfg):
+    """Why this tick must make no Graph calls (the viral-bank scan owns the
+    shared app's hour), or None. Checked in __main__ BEFORE Monitor() loads
+    the big state files, and again in tick() for any other caller."""
+    gq = cfg.get("graph_quiet_window")
+    if gq and gq[0] <= datetime.now().strftime("%H:%M") <= gq[1]:
+        return f"graph quiet window {gq[0]}-{gq[1]} (viral-bank scan) — tick skipped"
+    # a lock older than 3h is stale (the scan has never run past ~90 min):
+    # ignore it so a crashed scan can never silence pulse indefinitely
+    try:
+        if time.time() - SCAN_LOCK.stat().st_mtime < 3 * 3600:
+            return "viral-bank scan running (.scan.lock) — tick skipped"
+        log("viral-bank .scan.lock is over 3h old (stale) — ticking anyway")
+    except OSError:
+        pass  # no lock
+    return None
+
+
 def in_quiet_window(cfg):
     lo, hi = cfg["quiet_window"]
     t = datetime.now().strftime("%H:%M")
@@ -796,19 +814,10 @@ class Monitor:
         if (ROOT / "PAUSED").exists():
             log("PAUSED file present — tick skipped")
             return
-        gq = self.cfg.get("graph_quiet_window")
-        if gq and gq[0] <= datetime.now().strftime("%H:%M") <= gq[1]:
-            log(f"graph quiet window {gq[0]}-{gq[1]} (viral-bank scan) — tick skipped")
+        why = scan_quiet_reason(self.cfg)
+        if why:
+            log(why)
             return
-        # a lock older than 3h is stale (the scan has never run past ~90 min):
-        # ignore it so a crashed scan can never silence pulse indefinitely
-        try:
-            if time.time() - SCAN_LOCK.stat().st_mtime < 3 * 3600:
-                log("viral-bank scan running (.scan.lock) — tick skipped")
-                return
-            log("viral-bank .scan.lock is over 3h old (stale) — ticking anyway")
-        except OSError:
-            pass  # no lock
         # empty pool = tags.json failed to load; polling nothing is survivable
         # but prune_media would delete EVERY record and save_json would then
         # overwrite tags.json with the empty pool — refuse the whole tick
@@ -911,7 +920,11 @@ if __name__ == "__main__":
                   "(concurrent ticks double the Graph call rate). Retry in a few minutes.")
             sys.exit(1)
     try:
-        Monitor(dry_run=dry).tick()
+        _why = scan_quiet_reason({**CFG_DEFAULTS, **load_json(ROOT / "config.json", {})})
+        if _why:
+            log(_why)  # skip before Monitor() loads the ~60 MB state
+        else:
+            Monitor(dry_run=dry).tick()
     finally:
         if _self_lock:
             try:
